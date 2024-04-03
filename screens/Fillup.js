@@ -17,7 +17,7 @@ const Fillup = () => {
   const [weight, setWeight] = useState('');
   const [birthdate, setBirthdate] = useState('');
   const [nameError, setNameError] = useState('');
-  const [genderError, setGenderError] = useState('');
+  //const [genderError, setGenderError] = useState('');
   const [heightError, setHeightError] = useState('');
   const [weightError, setWeightError] = useState('');
   const [birthdateError, setBirthdateError] = useState('');
@@ -45,12 +45,6 @@ const Fillup = () => {
       valid = false;
     } else {
       setNameError('');
-    }
-    if (gender.trim() === '') {
-      setGenderError('Gender is required');
-      valid = false;
-    } else {
-      setGenderError('');
     }
     if (isNaN(height) || height.trim() === '') {
       setHeightError('Height must be a number');
@@ -132,23 +126,6 @@ const Fillup = () => {
         />
         {nameError !== '' && 
         <Text style={styles.error}>{nameError}</Text>}
-      </View>
-
-
-      <View style={styles.inputContainer}>
-        <Text style={styles.inputText}>Gender</Text>
-        <Picker
-          selectedValue={gender}
-          style={styles.input}
-          onValueChange={(itemValue, itemIndex) =>
-            setGender(itemValue)
-          }>
-          <Picker.Item label="Select Gender" value="" />
-          <Picker.Item label="Male" value="male" />
-          <Picker.Item label="Female" value="female" />
-        </Picker>
-        {genderError !== '' && 
-        <Text style={styles.error}>{genderError}</Text>}
       </View>
 
       <View style={styles.inputContainer}>
