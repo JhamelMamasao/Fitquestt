@@ -5,22 +5,58 @@ import { Color } from '../GlobalStyle';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { jwtDecode } from 'jwt-decode';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import base64 from 'base-64';
+import "core-js/stable/atob";
+
+
 
 const FinalDashboard = () => {
   const navigation = useNavigation();
   const [fontError, setFontError] = useState(false);
   const [name, setName] = useState(' ');
+  const [profile, setProfile] = useState(' ');
 
   useEffect(() => {
-    const fetchedName = 'Jhamel';
-    setName(fetchedName);
+    const fetchData = async () => {
+      try {
+        const token = await AsyncStorage.getItem('access');
+        console.log(token)
+        if (token) {
+          const parts = token.split('.');
+          if (parts.length !== 3) {
+            throw new Error('The token is invalid');
+          }
+  
+          const header = JSON.parse(base64.decode(parts[0]));
+          console.log('Decoded header:', header);
+  
+          const payload = jwtDecode(token);
+          console.log('Decoded payload:', payload);
+          
+          setName(payload.first_name);
+          setProfile(payload.profile);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchData();
   }, []);
+
+
+
+  
 
   const dashboard2 = () => {
     navigation.navigate('ChooseQuest');
   };
   const LoginScreen = () => {
     navigation.navigate('LoginScreen');
+  };
+  const UserProfile = () => {
+    navigation.navigate('UserProfile');
   };
 
   let [fontsLoaded] = useFonts({
@@ -43,7 +79,7 @@ const FinalDashboard = () => {
     return (
       <View style={styles.header}> 
           <View style={styles.profile}>
-               <Image  style={styles.profileImage} />
+          <Image style={styles.profileImage} source={{uri: profile}} />
           </View>
           <View style={styles.textContainer}>
           <Text style={styles.greet}>Hello {name},</Text>
@@ -68,6 +104,7 @@ const FinalDashboard = () => {
   return (
     <SafeAreaView style={styles.container}>
       <Header />
+      <View style={styles.separator} />
       <View style={styles.boxContainer1}>
         <View style={styles.box1}>
           <Text style={styles.Challengetext}>Daily Quest</Text>
@@ -82,11 +119,13 @@ const FinalDashboard = () => {
           </View>
         </View>
         <Text style={styles.dashboardtext}>Dashboard</Text>
+        <View style={styles.separators} />
         <ScrollView horizontal={true} style={styles.boxContainer}>
-          <Box title="User Profile" onPress={() => {}} icon={require('../assets/images/users.png')} />
+          <Box title="User Profile" onPress={UserProfile} icon={require('../assets/images/users.png')} />
           <Box title="Leaderboards" onPress={() => {}} icon={require('../assets/images/la.png')} />
           <Box title="Challenge" onPress={() => {}} icon={require('../assets/images/cha.png')} />
         </ScrollView>
+        
       </View>
     </SafeAreaView>
   );
@@ -98,22 +137,29 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    padding: 10,
+    padding: 12,
     flexDirection: 'row-reverse',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
     
   },
   profile: {
-    width: 55,
-    height: 55,
+    width: 45,
+    height: 45,
     borderRadius: 50,
     backgroundColor: Color.colorDarkorange,
-    
-    
-    
+  },
+  separator: {
+    borderBottomColor: 'gray',
+    borderBottomWidth: 0.2,
+    bottom: 10,
+    elevation: 3,
+  },
+  separators: {
+    borderBottomColor: 'gray',
+    borderBottomWidth: 0.4,
+    top: 17,
+    elevation: 3,
   },
   profileImage: {
     width: '100%',
@@ -123,14 +169,14 @@ const styles = StyleSheet.create({
   greet: {
     fontSize: 20,
     fontFamily: 'Poppins-Medium',
-
-   
+    top: 10,
   },
   naText: {
     fontSize: 30,
     fontFamily: 'Poppins-Bold',
     alignSelf: 'flex-start',
   },
+
   circle: {
     width: 100,
     height: 100,
