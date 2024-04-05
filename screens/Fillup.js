@@ -30,41 +30,40 @@ const Fillup = () => {
   const FinalDashboard = () => {
     if (validateForm()) {
       const endpoint = 'https://fitquest-8it9.onrender.com/api/account/update';
-
-      const data = {
-        first_name: first_name,
-        last_name: last_name,
-        gender: gender,
-        height: height,
-        weight: weight,
-        birth_date: birth_date
-      };
-
+  
+      const formData = new FormData();
+      formData.append('first_name', first_name);
+      formData.append('last_name', last_name);
+      formData.append('gender', gender);
+      formData.append('height', height);
+      formData.append('weight', weight);
+      formData.append('birth_date', birth_date);
+  
       fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
+        method: 'PUT',
+        body: formData,
       })
-        .then(response => {
+        .then((response) => {
           if (response.ok) {
             return response.json();
           } else {
-            throw new Error('Request failed.');
+            // Handle non-200 status codes
+            throw new Error(Request failed with status ${response.status}: ${response.statusText});
           }
         })
-        .then(result => {
+        .then((result) => {
           // Handle the response data
-          console.log(result);
+          console.log('API response:', result);
           navigation.navigate('Dashboard');
         })
-        .catch(error => {
-          // Handle errors
-          console.error(error);
+        .catch((error) => {
+          // Handle network errors or other issues
+          console.error('Error during API request:', error.message);
+          // You can also display a user-friendly error message to the user
+          // e.g., toast or modal with "Something went wrong. Please try again later."
         });
     }
-  };
+  };  
 
   const validateForm = () => {
     let valid = true;
@@ -272,7 +271,7 @@ const styles = StyleSheet.create({
   submitButtonText: {
     color: "white",
     fontSize: 16,
-    fontweight: "bold",
+    fontWeight: "bold",
     textAlign: "center",
     fontFamily: "Poppins-Medium",
   },
