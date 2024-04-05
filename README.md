@@ -1,10 +1,11 @@
 for new download
 
 
-first download this 
+inot download nido ni 
 npx create-expo-app Fitquest   
 
-second download directory and replace 
+second download nindo ning directory as zip tas sa Fitquest folder kamo mag unzip tas replace all 
 
-third if have an error in expo location 
- npx expo install expo-location      download this
+third pag may error na arog kani Failed to resolve plugin for module "expo-location" relative to
+ npx expo install expo-location      
+ download lang nindo ni
