@@ -5,82 +5,28 @@ import { Color } from '../GlobalStyle';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { jwtDecode } from 'jwt-decode';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import base64 from 'base-64';
-import "core-js/stable/atob";
-
-
 
 const FinalDashboard = () => {
   const navigation = useNavigation();
   const [fontError, setFontError] = useState(false);
   const [name, setName] = useState(' ');
-  const [names, setNames] = useState(' ');
-  const [profile, setProfile] = useState(' ');
-  const [greeting, setGreeting] = useState(' ');
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const token = await AsyncStorage.getItem('access');
-        console.log(token)
-        if (token) {
-          const parts = token.split('.');
-          if (parts.length !== 3) {
-            throw new Error('The token is invalid');
-          }
-  
-          const header = JSON.parse(base64.decode(parts[0]));
-          console.log('Decoded header:', header);
-  
-          const payload = jwtDecode(token);
-          console.log('Decoded payload:', payload);
-          
-          setName(payload.first_name);
-          setProfile(payload.profile);
-          setNames(payload.last_name);
-        }
-        const hour = new Date().getHours();
-        if (hour >= 5 && hour < 12) {
-          setGreeting('Good morning');
-        } else if (hour >= 12 && hour < 18) {
-          setGreeting('Good afternoon');
-        } else {
-          setGreeting('Good evening');
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    
-    fetchData();
+    const fetchedName = 'Jhamel';
+    setName(fetchedName);
   }, []);
 
-
-
-  
-
   const dashboard2 = () => {
-    navigation.navigate('TaskCreation');
+    navigation.navigate('ChooseQuest');
   };
   const LoginScreen = () => {
     navigation.navigate('LoginScreen');
-  };
-  const UserProfile = () => {
-    navigation.navigate('UserProfile');
-  };
-  const Leaderboards = () => {
-    navigation.navigate('Leaderboards');
   };
 
   let [fontsLoaded] = useFonts({
     "Poppins-Medium": require('../assets/fonts/Poppins-Medium.ttf'),
     "Poppins-Bold": require('../assets/fonts/Poppins-Bold.ttf'),
     "Poppins-Black": require('../assets/fonts/Poppins-Black.ttf'),
-    "Poppins-Light": require('../assets/fonts/Poppins-Light.ttf'),
-    "Poppins-SemiBold": require('../assets/fonts/Poppins-SemiBold.ttf'),
   });
 
   const onLayoutRootView = React.useCallback(async () => {
@@ -97,11 +43,12 @@ const FinalDashboard = () => {
     return (
       <View style={styles.header}> 
           <View style={styles.profile}>
-          <Image style={styles.profileImage} source={{uri: profile}} />
+               <Image  style={styles.profileImage} />
           </View>
-          <Text style={styles.greet}>{name}{'\n'}</Text>
-          <Text style={styles.greets}>{names}</Text>
-          <Image source={require('../assets/images/Notification.png')} style={styles.notif} />
+          <View style={styles.textContainer}>
+          <Text style={styles.greet}>Hello {name},</Text>
+          <Text style={styles.naText}>Let's Run</Text>
+      </View>
       </View>
     )
   }
@@ -121,9 +68,6 @@ const FinalDashboard = () => {
   return (
     <SafeAreaView style={styles.container}>
       <Header />
-      <View style={styles.separator} />
-      <Text style={styles.good}> {greeting},</Text>
-      <Text style={styles.naText}>Let's Run</Text>
       <View style={styles.boxContainer1}>
         <View style={styles.box1}>
           <Text style={styles.Challengetext}>Daily Quest</Text>
@@ -137,13 +81,12 @@ const FinalDashboard = () => {
             <Image source={require('../assets/images/runrun.png')} style={styles.run} />
           </View>
         </View>
-        <Text style={styles.dashboardtext}>Others</Text>
+        <Text style={styles.dashboardtext}>Dashboard</Text>
         <ScrollView horizontal={true} style={styles.boxContainer}>
-          <Box title="User Profile" onPress={UserProfile} icon={require('../assets/images/users.png')} />
-          <Box title="Leaderboards" onPress={Leaderboards} icon={require('../assets/images/la.png')} />
+          <Box title="User Profile" onPress={() => {}} icon={require('../assets/images/users.png')} />
+          <Box title="Leaderboards" onPress={() => {}} icon={require('../assets/images/la.png')} />
           <Box title="Challenge" onPress={() => {}} icon={require('../assets/images/cha.png')} />
         </ScrollView>
-        
       </View>
     </SafeAreaView>
   );
@@ -155,29 +98,22 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    padding: 15,
-    flexDirection: 'row',
+    padding: 10,
+    flexDirection: 'row-reverse',
+    justifyContent: 'space-between',
     alignItems: 'center',
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
     
   },
   profile: {
-    width: 50,
-    height: 50,
-    top: 10,
-    borderRadius: 55,
-    backgroundColor: 'tranparent',
-  },
-  separator: {
-    borderBottomColor: 'gray',
-    borderBottomWidth: 0.2,
-    bottom: -3,
-    elevation: 3,
-  },
-  separators: {
-    borderBottomColor: 'gray',
-    borderBottomWidth: 0.4,
-    top: 17,
-    elevation: 3,
+    width: 55,
+    height: 55,
+    borderRadius: 50,
+    backgroundColor: Color.colorDarkorange,
+    
+    
+    
   },
   profileImage: {
     width: '100%',
@@ -185,27 +121,16 @@ const styles = StyleSheet.create({
     borderRadius: 25,
   },
   greet: {
-    fontSize: 18,
+    fontSize: 20,
     fontFamily: 'Poppins-Medium',
-    top: 10,
-    left: 15,
 
-  },
-  greets: {
-    fontSize: 18,
-    fontFamily: 'Poppins-Medium',
-    top: 22,
-    left: -45,
-
+   
   },
   naText: {
-    fontSize: 40,
-    fontFamily: 'Poppins-SemiBold',
+    fontSize: 30,
+    fontFamily: 'Poppins-Bold',
     alignSelf: 'flex-start',
-    left: 17,
-    top: 5,
   },
-
   circle: {
     width: 100,
     height: 100,
@@ -227,30 +152,30 @@ const styles = StyleSheet.create({
   },
   boxContainer: {
     flex: 1,
-    top: "5%",
+    marginTop: 20,
     flexDirection: 'row',
   },
   dashboardtext: {
     top: 20,
     fontSize: 20,
-    fontFamily: 'Poppins-SemiBold',
+    fontFamily: 'Poppins-Medium',
     marginLeft: 9,
   },
   box: {
-    width: 170, 
-    height: '90%', 
+    width: 200, 
+    height: '100%', 
     padding: 5,
     shadowColor: 'black',
     shadowOpacity: 0.8,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 5,
-    elevation: 10,
+    elevation: 8,
   },
   box1: {
     width: '100%',
     height: '40%',
     backgroundColor: Color.colorDarkorange,
-    padding: 10,
+    padding: 11,
     borderRadius: 10,
     position: 'relative',
     overflow: 'hidden', 
@@ -259,7 +184,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 5,
     elevation: 8,
-    bottom: 10,
   },
   inner: {
     flex: 1,
@@ -276,22 +200,22 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   Challengetext:  {
-    fontSize: 35,
-    fontFamily: 'Poppins-SemiBold',
+    fontSize: 40,
+    fontFamily: 'Poppins-Bold',
     marginLeft: 9,
     color: 'white',
     marginTop: 10,
   },
   Challengetext1:  {
-    fontSize: 18,
+    fontSize: 17,
     fontFamily: 'Poppins-Medium',
     marginLeft: 9,
     color: 'white',
     top: '-5%',
   },
   Vector: {
-    width: 60,
-    height: 40,
+    width: 70,
+    height: 50,
     borderRadius: 55,
     backgroundColor: 'white',
     top: 60,
@@ -304,10 +228,10 @@ const styles = StyleSheet.create({
   },
   run: {
     width: '80%',
-    height: '85%', 
+    height: '80%', 
     position: 'absolute', 
-    bottom: '-40%', 
-    right: 120,
+    bottom: '-38%', 
+    right: 110,
   },
   imageContainer: {
     width: '100%',
@@ -338,20 +262,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Medium',
     color: 'white',
 
-  },
-  notif: {
-    width: 25,
-    height: 25,
-    left: "95%",
-    top: 35,
-    position: 'absolute',
-  },
-
-  good: {
-    fontSize: 17,
-    fontFamily: 'Poppins-Medium',
-    top: 15,
-    left: 15,
   },
 
 

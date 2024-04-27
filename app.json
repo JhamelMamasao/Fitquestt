@@ -51,12 +51,6 @@
             },
             {
               "asset": "../assets/fonts/Poppins-Black.ttf"
-            },
-            {
-              "asset": "../assets/fonts/Poppins-SemiBold.ttf"
-            },
-            {
-              "asset": "../assets/fonts/Poppins-Light.ttf"
             }
           ]
         }

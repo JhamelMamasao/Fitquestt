@@ -31,7 +31,7 @@ const ChooseQuest = () => {
     navigation.goBack();
   };
   const Tracking = () => {
-    navigation.navigate('TaskCreation');
+    navigation.navigate('Tracking');
   };
 
 

@@ -1,20 +1,81 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable, Image, Button} from 'react-native';
 import { useNavigation, useRoute  } from '@react-navigation/native';
 import { Color } from '../GlobalStyle';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { jwtDecode } from 'jwt-decode';
+import base64 from 'base-64';
+import "core-js/stable/atob";
 
 const TaskScreen = () => {
-    const taskDescription = 'Complete 0.01 kilometers';
-    const Km = 0.01;
+    const [taskDescription, setDesription] = useState('')
+    const [Km, setDistance] = useState(0);
+    const [rewardExp, setRewards] = useState(0);
     const route = useRoute();
     const { difficulty } = route.params;
-    const rewardExp = 100;
     const navigation = useNavigation();
     const [fontError, setFontError] = useState(false);
     const [name, setName] = useState('');
+
+    const Quest = async () => {
+    try {
+        const token = await AsyncStorage.getItem('access');
+        if (!token) {
+            throw new Error('Token not found');
+        }
+
+        const headers = {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        };
+
+        // Fetch the list of quests from the API
+        const response = await fetch('https://fitquest-8it9.onrender.com/api/quest/', {
+            method: 'GET',
+            headers: headers
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch quest data');
+        }
+
+        const responseData = await response.json();
+        const { results } = responseData;
+
+        // Shuffle the array of quests with the first quest prioritized
+        shuffleArray(results, 0);
+
+        // Select the first quest from the shuffled array
+        const randomQuest = results[0];
+        console.log(randomQuest);
+
+        // Assuming setDescription is defined in your component, set the description of the random quest
+        setDesription(randomQuest.description);
+        setDistance(randomQuest.distance);
+        setRewards(randomQuest.prize);
+
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        throw error;
+    }
+};
+
+// Function to shuffle array elements with the first element prioritized
+function shuffleArray(array, firstIndex) {
+    const firstElement = array[firstIndex];
+    array.splice(firstIndex, 1);
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    array.unshift(firstElement);
+}
+useEffect(() => {
+    Quest();
+}, []); // Fetch data when component mounts
 
     let [fontsLoaded] = useFonts({
         "Poppins-Medium": require('../assets/fonts/Poppins-Medium.ttf'),
@@ -40,7 +101,9 @@ const TaskScreen = () => {
     const navigateToTracking = () => {
         navigation.navigate('Tracking', { targetDistance: Km }); // Pass Km as parameter
     };
-    
+
+
+   
 
     return (
         <SafeAreaView style={styles.container}>
@@ -154,7 +217,6 @@ const styles = StyleSheet.create({
         fontFamily: 'Poppins-Medium',
         paddingLeft: 20,
         paddingRight: 12,
-        paddingTop: 10,
     },
     boxContainer: {
         flexDirection: 'row',

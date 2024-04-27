@@ -28,7 +28,7 @@ const TaskCreation = () => {
     }
 
     const goBack = () => {
-        navigation.navigate('Dashboard');
+        navigation.navigate('ChooseQuest');
     };
     const handleTaskCreation = (difficulty) => {
         // Navigate to the Tracking screen and pass the difficulty level as a parameter
@@ -42,42 +42,50 @@ const TaskCreation = () => {
                 <Pressable onPress={goBack}>
                     <Image source={require('../assets/images/Backblack.png')} style={styles.back} />
                 </Pressable>
-                <Text style={styles.textTask}>Create your Task</Text>
+                <Text style={styles.textTask}>Running Task</Text>
             </View>      
             <ScrollView style={styles.scrollView}>
             <View style={styles.separator} />
                 <View style={styles.content}>
+                <Pressable onPress={() => handleTaskCreation('Getting Started')}>
                 <ImageBackground source={require('../assets/images/bg2.png')} style={styles.box}>
-                <Pressable style={styles.inner} onPress={() => handleTaskCreation('Getting Started')}>
+                <View style={styles.inner} onPress={() => handleTaskCreation('Getting Started')}>
                     <BlurView intensity={90} tint='dark' style={styles.textContainer}>
                     <Text style={styles.innerText}>Getting Started</Text>
                     </BlurView>
-                </Pressable>
+                </View>
                 </ImageBackground>
+                </Pressable>
 
+                <Pressable onPress={() => handleTaskCreation('Advance')}>
                 <ImageBackground source={require('../assets/images/bg3.png')} style={styles.box}>
-                <Pressable style={styles.inner} onPress={() => handleTaskCreation('Advance')}>
+                <View style={styles.inner}>
                     <BlurView intensity={90} tint='dark' style={styles.textContainer}>
                     <Text style={styles.innerText}>Advance</Text>
                     </BlurView>
-                </Pressable>
+                </View>
                 </ImageBackground>
+                </Pressable>
                 
+                <Pressable onPress={() => handleTaskCreation('Hard')}>
                 <ImageBackground source={require('../assets/images/bg4.png')} style={styles.box}>
-                <Pressable style={styles.inner} onPress={() => handleTaskCreation('Hard')}>
+                <View style={styles.inner}>
                     <BlurView intensity={90} tint='dark' style={styles.textContainer}>
                     <Text style={styles.innerText}>Hard</Text>
                     </BlurView>
-                </Pressable>
+                </View>
                 </ImageBackground>
+                </Pressable>
 
+                <Pressable onPress={() => handleTaskCreation('Intermediate')}>
                 <ImageBackground source={require('../assets/images/bg5.png')} style={styles.box}>
-                <Pressable style={styles.inner} onPress={() => handleTaskCreation('Intermediate')}>
+                <View style={styles.inner}>
                 <BlurView intensity={90} tint='dark' style={styles.textContainer}>
                     <Text style={styles.innerText}>Intermediate</Text>
                     </BlurView>
-                </Pressable>
+                </View>
                 </ImageBackground>
+                </Pressable>
                 </View>
             </ScrollView>
         </SafeAreaView>
@@ -160,9 +168,7 @@ const styles = StyleSheet.create({
         width: '100%',
         justifyContent: 'center',
         paddingLeft: 10,
-        zIndex: 2
-
-        
+        zIndex: 2,
     },
     yeah: {
         width: "85%",
