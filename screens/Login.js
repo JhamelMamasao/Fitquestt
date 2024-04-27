@@ -1,20 +1,29 @@
 import React, { useState } from "react";
-import { StyleSheet, View, Pressable, Text, TextInput, Image } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Pressable,
+  Text,
+  TextInput,
+  Image,
+} from "react-native"; // Import AsyncStorage
 import { useNavigation } from "@react-navigation/native";
 import { Color } from "../GlobalStyle";
-import { useFonts } from 'expo-font';
+import { useFonts } from "expo-font";
 import { SafeAreaView } from "react-native-safe-area-context";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { jwtDecode } from "jwt-decode";
 
 const LoginScreen = () => {
   const navigation = useNavigation();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [usernameError, setUsernameError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [usernameError, setUsernameError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [fontsLoaded, error] = useFonts({
-    "Poppins-Medium": require('../assets/fonts/Poppins-Medium.ttf'),
-    "Poppins-Bold": require('../assets/fonts/Poppins-Bold.ttf'),
-  }); 
+    "Poppins-Medium": require("../assets/fonts/Poppins-Medium.ttf"),
+    "Poppins-Bold": require("../assets/fonts/Poppins-Bold.ttf"),
+  });
 
   const handleLogin = async () => {
     try {
@@ -23,32 +32,58 @@ const LoginScreen = () => {
       }
 
       // Send a POST request to your API endpoint for authentication
-      const response = await fetch('https://fitquest-8it9.onrender.com/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          username,
-          password,
-        }),
-      });
+      const response = await fetch(
+        "https://fitquest-8it9.onrender.com/api/auth/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username,
+            password,
+          }),
+        }
+      );
 
       const data = await response.json();
 
       if (response.ok) {
-        navigation.navigate('Dashboard');
+        const decoded = jwtDecode(data.access); // decode the access token
+
+        await AsyncStorage.setItem("access", data.access); // save the access token
+        await AsyncStorage.setItem("refresh", data.refresh); // save the refresh token
+
+        await AsyncStorage.setItem("user_id", decoded.user_id.toString()); // save the decoded user_id
+        await AsyncStorage.setItem("first_name", decoded.first_name); // save the decoded first_name
+        await AsyncStorage.setItem("last_name", decoded.last_name); // save the decoded last_name
+        await AsyncStorage.setItem("birth_date", decoded.birth_date); // save the decoded birth_date
+        await AsyncStorage.setItem("email", decoded.email); // save the decoded email
+        await AsyncStorage.setItem("username", decoded.username); // save the decoded username
+        await AsyncStorage.setItem(
+          "height",
+          decoded.height ? decoded.height.toString() : "0"
+        ); // save the decoded height
+        await AsyncStorage.setItem(
+          "weight",
+          decoded.weight ? decoded.weight.toString() : "0"
+        ); // save the decoded weight
+        await AsyncStorage.setItem("profile", decoded.profile); // save the decoded profile
+        await AsyncStorage.setItem("slug", decoded.slug); // save the decoded slug
+
+        // Navigate to Dashboard
+        navigation.navigate("Dashboard");
       } else {
-        setUsernameError('Invalid username or password');
-        setPasswordError('Invalid username or password');
+        setUsernameError("Invalid username or password");
+        setPasswordError("Invalid username or password");
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
   };
 
   const handleSignUpPress = () => {
-    navigation.navigate('Register');
+    navigation.navigate("Register");
   };
 
   const handleForgotPassword = () => {
@@ -57,18 +92,18 @@ const LoginScreen = () => {
 
   const validateForm = () => {
     let valid = true;
-    if (username.trim() === '') {
-      setUsernameError('Username is required');
+    if (username.trim() === "") {
+      setUsernameError("Username is required");
       valid = false;
     } else {
-      setUsernameError('');
+      setUsernameError("");
     }
 
-    if (password.trim() === '') {
-      setPasswordError('Password is required');
+    if (password.trim() === "") {
+      setPasswordError("Password is required");
       valid = false;
     } else {
-      setPasswordError('');
+      setPasswordError("");
     }
     return valid;
   };
@@ -88,7 +123,9 @@ const LoginScreen = () => {
           onChangeText={setUsername}
           value={username}
         />
-        {usernameError !== '' && <Text style={styles.error}>{usernameError}</Text>}
+        {usernameError !== "" && (
+          <Text style={styles.error}>{usernameError}</Text>
+        )}
       </View>
 
       <View style={styles.inputContainer}>
@@ -100,7 +137,9 @@ const LoginScreen = () => {
           onChangeText={setPassword}
           value={password}
         />
-        {passwordError !== '' && <Text style={styles.error}>{passwordError}</Text>}
+        {passwordError !== "" && (
+          <Text style={styles.error}>{passwordError}</Text>
+        )}
       </View>
 
       <Pressable onPress={handleForgotPassword}>
@@ -113,18 +152,29 @@ const LoginScreen = () => {
 
       <Text style={styles.SocialText}>Login with</Text>
       <View style={styles.socialIconsContainer}>
-        <Pressable style={styles.socialIcon} onPress={() => console.log("Google Login")}>
-          <Image source={require('../assets/images/google.png')} style={styles.socialIconImage} />
+        <Pressable
+          style={styles.socialIcon}
+          onPress={() => console.log("Google Login")}
+        >
+          <Image
+            source={require("../assets/images/google.png")}
+            style={styles.socialIconImage}
+          />
         </Pressable>
-        <Pressable style={styles.socialIcon} onPress={() => console.log("Facebook Login")}>
-          <Image source={require('../assets/images/fb.png')} style={styles.socialIconImage} />
+        <Pressable
+          style={styles.socialIcon}
+          onPress={() => console.log("Facebook Login")}
+        >
+          <Image
+            source={require("../assets/images/fb.png")}
+            style={styles.socialIconImage}
+          />
         </Pressable>
       </View>
 
       <Pressable style={styles.signUp} onPress={handleSignUpPress}>
         <Text style={styles.textSignin}>
-          Create an account?{' '}
-          <Text style={styles.textSignUp}>Sign Up</Text>
+          Create an account? <Text style={styles.textSignUp}>Sign Up</Text>
         </Text>
       </Pressable>
     </SafeAreaView>
@@ -134,9 +184,9 @@ const LoginScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "white",
+    justifyContent: "center",
+    alignItems: "center",
   },
   LoginText: {
     fontSize: 50,
@@ -162,7 +212,7 @@ const styles = StyleSheet.create({
     width: "100%",
     padding: 10,
     borderRadius: 5,
-    shadowColor: 'black',
+    shadowColor: "black",
     shadowOpacity: 0.6,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 5,
@@ -186,7 +236,7 @@ const styles = StyleSheet.create({
     width: "80%",
     alignSelf: "center",
     marginTop: 10,
-    shadowColor: 'black',
+    shadowColor: "black",
     shadowOpacity: 0.8,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 5,
@@ -208,27 +258,27 @@ const styles = StyleSheet.create({
   },
   socialIconsContainer: {
     flexDirection: "row",
-    justifyContent: "center", 
+    justifyContent: "center",
     marginBottom: 10,
   },
   socialIcon: {
     backgroundColor: "transparent",
     padding: 5,
     borderRadius: 20,
-    marginHorizontal: 10, 
+    marginHorizontal: 10,
   },
   socialIconImage: {
     width: 40,
     height: 40,
   },
   signUp: {
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
   },
   textSignin: {
     flexDirection: "row",
     fontSize: 14,
     right: 10,
-    textAlign: 'center',
+    textAlign: "center",
     fontFamily: "Poppins-Medium",
   },
   textSignUp: {
@@ -237,7 +287,7 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-Medium",
   },
   error: {
-    color: 'red',
+    color: "red",
     fontSize: 12,
   },
 });

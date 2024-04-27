@@ -14,10 +14,6 @@ const Leaderboards = () => {
     const navigation = useNavigation();
     const [fontError, setFontError] = useState(false);
     const [players, setPlayers] = useState([]);
-    const [name, setName] = useState(' ');
-    const [names, setNames] = useState(' ');
-    const [profile, setProfile] = useState(' ');
-    const [exp, setExp] = useState(' ');
     const roundedTotal = parseFloat(players.total).toFixed(4);
 
     useEffect(() => {
@@ -47,7 +43,7 @@ const Leaderboards = () => {
             }
 
             const data = await response.json();
-            //console.log('Response data:', data);
+            console.log('Response data:', data);
 
             // Sort players based on total scores
             const sortedPlayers = data.sort((a, b) => b.total - a.total);
@@ -55,38 +51,7 @@ const Leaderboards = () => {
         } catch (error) {
             console.error('Error fetching data:', error);
         }
-        
     };
-    useEffect(() => {
-        const fetchData = async () => {
-          try {
-            const token = await AsyncStorage.getItem('access');
-            //console.log(token)
-            if (token) {
-              const parts = token.split('.');
-              if (parts.length !== 3) {
-                throw new Error('The token is invalid');
-              }
-      
-              const header = JSON.parse(base64.decode(parts[0]));
-              //console.log('Decoded header:', header);
-      
-              const payload = jwtDecode(token);
-              //console.log('Decoded payload:', payload);
-              
-              setName(payload.first_name);
-              setProfile(payload.profile);
-              setNames(payload.last_name);
-              setExp(payload.exp)
-            }
-          } catch (error) {
-            console.error(error);
-          }
-        };
-    
-        
-        fetchData();
-      }, []);
 
     let [fontsLoaded] = useFonts({
         "Poppins-Medium": require('../assets/fonts/Poppins-Medium.ttf'),
@@ -108,6 +73,7 @@ const Leaderboards = () => {
     const goBack = () => {
         navigation.navigate('Dashboard')
     }
+
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.header}>
@@ -157,23 +123,17 @@ const Leaderboards = () => {
                 </View>
             </View>
             <ScrollView>
-            {players.slice(3, 10).map((player, index) => (
-                <View style={styles.otherboxes} key={index}>
-                    <View style={styles.otherContainer}>
-                        <Text style={styles.number}>{index + 4}</Text>
-                        <Image style={styles.ProfileOther} source={{uri: player.profile}} />
-                        <Text style={styles.nameOther}>{player.first_name} {player.last_name}</Text>
-                        <Text style={styles.expOther}>{parseFloat(player.total).toFixed(4)}</Text>
+                {players.slice(3).map((player, index) => (
+                    <View style={styles.otherboxes} key={index}>
+                        <View style={styles.otherContainer}>
+                            <Text style={styles.number}>{index + 4}</Text>
+                            <Image style={styles.ProfileOther} source={{uri: player.profile}} />
+                            <Text style={styles.nameOther}>{player.first_name} {player.last_name}</Text>
+                            <Text style={styles.expOther}>{parseFloat(player.total).toFixed(4)}</Text>
+                        </View>
                     </View>
-                </View>
-            ))}
+                ))}
             </ScrollView>
-            <View style={styles.footer} >
-            <Text style={styles.numberss}>0</Text>   
-            {profile ? <Image style={styles.profilesss} source={{ uri: profile }} /> : <Image style={styles.profile} source={{ uri: './assets/images/placeholder.jpg' }} />}
-                <Text style={styles.footerText}>{name} {names}</Text>
-                <Text style={styles.footerTexts}>{parseFloat(exp).toFixed(1).replace(/\.0$/, '').slice(0, 6)}</Text>
-            </View>
         </SafeAreaView>
     );
 };
@@ -383,49 +343,7 @@ const styles = StyleSheet.create({
         fontFamily: 'Poppins-Bold',
         fontSize: 13,
 
-    },
-    
-    footer: {
-        position: 'absolute',
-        bottom: 10,
-        left: 10,
-        right: 0,
-        backgroundColor: 'white',
-        height: 70, 
-        width: "95%",
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: 10,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        backgroundColor: Color.colorDarkorange,
-    },
-    footerText: {
-        fontFamily: 'Poppins-Medium',
-        fontSize: 15,
-        color: 'black',
-        color: 'white',
-        right: 15,
-    },
-    profilesss: {
-        width: 50,
-        height: 50,
-        borderRadius: 50,
-    },
-    footerTexts: {
-        fontFamily: 'Poppins-Medium',
-        fontSize: 13,
-        color: 'white',
-        right: 30,
-    },
-    numberss: {
-        fontFamily: 'Poppins-Bold',
-        fontSize: 30,
-        textAlign: 'center',
-        left: 20,
-        color: 'white',
-    },
-    
+    }
 });
 
 export default Leaderboards;
