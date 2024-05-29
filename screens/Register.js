@@ -21,7 +21,7 @@ const Register = () => {
 
       console.log("Signing up with:", { email, username, password1, password2 });
 
-      const response = await fetch('https://fitquest-8it9.onrender.com/api/auth/register', {
+      const response = await fetch('https://fit-quest.azurewebsites.net/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

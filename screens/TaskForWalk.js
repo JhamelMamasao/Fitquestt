@@ -33,7 +33,7 @@ const TaskWalkingScreen = () => {
         };
 
         // Fetch the list of quests from the API
-        const response = await fetch(`https://fitquest-8it9.onrender.com/api/quest/`, {
+        const response = await fetch(`https://fit-quest.azurewebsites.net/api/quest/`, {
             method: 'GET',
             headers: headers
         });

@@ -143,7 +143,7 @@ function Tracking() {
   // Function to update API with latitude, longitude, and quest
   const updateAPIWithLocation = async (latitude, longitude, quest) => {
     try {
-      const response = await axios.post('https://fitquest-8it9.onrender.com/api/location/create', {
+      const response = await axios.post('https://fit-quest.azurewebsites.net/api/location/create', {
         latitude: latitude,
         longitude: longitude,
         quest: quest

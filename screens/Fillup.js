@@ -7,60 +7,74 @@ import * as SplashScreen from 'expo-splash-screen';
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as ImagePicker from 'expo-image-picker';
 import { useFonts } from 'expo-font';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import DecodeToken from './DecodeToken';
 
 const Fillup = () => {
   const navigation = useNavigation();
   const [first_name, setfirst_name] = useState('');
   const [last_name, setlast_name] = useState('');
-  const [gender, setGender] = useState('');
+  const [username, setUsername] = useState('');
   const [height, setHeight] = useState('');
   const [weight, setweight] = useState('');
   const [birth_date, setbirth_date] = useState('');
+
   const [nameError, setNameError] = useState('');
+  const [usernameError, setUsernameError] = useState('');
   const [heightError, setHeightError] = useState('');
   const [weightError, setweightError] = useState('');
   const [birth_dateError, setbirth_dateError] = useState('');
   const [image, setImage] = useState(null);
   const [fontError, setFontError] = useState(false);
 
+
+
   const Logout = () => {
     navigation.navigate('Opening');
   };
 
-  const FinalDashboard = () => {
+
+  const FinalDashboard = async () => {
     if (validateForm()) {
-      const endpoint = 'https://fitquest-8it9.onrender.com/api/account/update';
+      const endpoint = 'https://fit-quest.azurewebsites.net/api/account/update';
 
-      const data = {
-        first_name: first_name,
-        last_name: last_name,
-        gender: gender,
-        height: height,
-        weight: weight,
-        birth_date: birth_date
-      };
+      const access = await AsyncStorage.getItem('access');
 
+      const formData = new FormData();
+  
+      if (image !== null) {
+        formData.append("profile", {
+          uri: image.uri,
+          name: image.fileName,
+          type: image.mimeType,
+        });
+      }
+
+      formData.append('first_name', first_name);
+      formData.append('last_name', last_name);
+      formData.append('username', username);
+      formData.append('height', height);
+      formData.append('weight', weight);
+      formData.append('birth_date', birth_date);
+      
       fetch(endpoint, {
-        method: 'POST',
+        method: 'PUT',
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "multipart/form-data",
+          'Authorization': `Bearer ${access}`,
         },
-        body: JSON.stringify(data)
+        body: formData,
       })
-        .then(response => {
-          if (response.ok) {
-            return response.json();
-          } else {
-            throw new Error('Request failed.');
-          }
-        })
-        .then(result => {
-          // Handle the response data
-          console.log(result);
+        .then(async (response) => {
+          const data = await response.json();
+          await AsyncStorage.setItem('access', data.access);
+          await AsyncStorage.setItem('refresh', data.refresh);
+          DecodeToken(data.access);
           navigation.navigate('Dashboard');
         })
         .catch(error => {
           // Handle errors
+          console.log(JSON.stringify(error));
           console.error(error);
         });
     }
@@ -74,6 +88,14 @@ const Fillup = () => {
     } else {
       setNameError('');
     }
+
+    if (username.trim() === '') {
+      setUsernameError('Username is required');
+      valid = false;
+    } else {
+      setNameError('');
+    }
+
     if (last_name.trim() === '') {
       setNameError('Name is required');
       valid = false;
@@ -98,16 +120,23 @@ const Fillup = () => {
     } else {
       setbirth_dateError('');
     }
+    
+    // if (image === null) {
+    //   console.error('Please upload a profile picture');
+    //   valid = false;
+    // } else {}
+
     return valid;
   };
 
   const pickImage = async () => {
+    console.log('pickImage');
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
     });
 
     if (!result.cancelled) {
-      setImage(result.uri);
+      setImage(result.assets[0]);
     }
   };
 
@@ -134,7 +163,7 @@ const Fillup = () => {
           <Pressable style={styles.socialIcon} onPress={pickImage}>
             <Image source={require('../assets/images/upload.png')} style={styles.icon} />
           </Pressable>
-          {image && <Image source={{ uri: image }} style={styles.circleImage} />}
+          {image && <Image source={{ uri: image.uri }} style={styles.circleImage} />}
         </View>
       </View>
 
@@ -159,6 +188,18 @@ const Fillup = () => {
         {nameError !== '' && 
         <Text style={styles.error}>{nameError}</Text>}
       </View>
+
+      <View style={styles.inputContainer}>
+        <Text style={styles.inputText}>Username</Text>
+        <TextInput
+          style={styles.input}
+          onChangeText={(text) => setUsername(text)}
+          value={username}
+        />
+        {usernameError !== '' && 
+        <Text style={styles.error}>{usernameError}</Text>}
+      </View>
+
 
       <View style={styles.inputContainer}>
         <Text style={styles.inputText}>Birth Date</Text>

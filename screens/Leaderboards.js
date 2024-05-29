@@ -37,7 +37,7 @@ const Leaderboards = () => {
                 'Content-Type': 'application/json'
             };
 
-            const response = await fetch('https://fitquest-8it9.onrender.com/api/leaderboard/', {
+            const response = await fetch('https://fit-quest.azurewebsites.net/api/leaderboard/', {
                 method: 'GET',
                 headers: headers
             });

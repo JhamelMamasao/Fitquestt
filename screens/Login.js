@@ -24,7 +24,7 @@ const LoginScreen = () => {
       }
 
       // Send a POST request to your API endpoint for authentication
-      const response = await fetch('https://fitquest-8it9.onrender.com/api/auth/login', {
+      const response = await fetch('https://fit-quest.azurewebsites.net/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

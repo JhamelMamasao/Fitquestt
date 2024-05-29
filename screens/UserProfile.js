@@ -18,6 +18,7 @@ import {
     StackedBarChart
   } from "react-native-chart-kit";
 
+
 const UserProfile = () => {
     const navigation = useNavigation();
     const [fontError, setFontError] = useState(false); 
@@ -30,30 +31,27 @@ const UserProfile = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            try {
-                const token = await AsyncStorage.getItem('access');
-                console.log(token);
-                if (token) {
-                    const parts = token.split('.');
-                    if (parts.length !== 3) {
-                        throw new Error('The token is invalid');
-                    }
+           
+            const first_name_ = await AsyncStorage.getItem('first_name');
+            const last_name_ = await AsyncStorage.getItem('last_name');
+            const birth_date_ = await AsyncStorage.getItem('birth_date');
+            const email_ = await AsyncStorage.getItem('email');
+            const username_ = await AsyncStorage.getItem('username');
+            const height_ = await AsyncStorage.getItem('height');
+            const weight_ = await AsyncStorage.getItem('weight');
+            const profile_ = await AsyncStorage.getItem('profile');
+            const slug_ = await AsyncStorage.getItem('slug');
 
-                    const payload = jwtDecode(token);
-                    console.log('Decoded payload:', payload);
+            setName(first_name_);
+            setNames(last_name_);
+            setWeight(weight_);
+            setHeight(height_);
+            setProfile(profile_);
+            setBdate(birth_date_);
 
-                    setName(payload.first_name);
-                    setNames(payload.last_name);
-                    setWeight(payload.weight);
-                    setHeight(payload.height);
-                    setProfile(payload.profile);
-                    setBdate(payload.birth_date);
-                }
-            } catch (error) {
-                console.error(error);
-            }
         };
         fetchData();
+
     }, []);
 
     let [fontsLoaded] = useFonts({
