@@ -44,7 +44,6 @@ const ChooseQuest = () => {
         <Pressable onPress={goBack} style={styles.backButton}>
           <Image source={require('../assets/images/backwhite.png')} style={styles.back} />
         </Pressable>
-        <Image source={require('../assets/images/back2.jpg')} style={styles.header} />
       </View>
 
       <View style={styles.box}>
