@@ -34,8 +34,8 @@ const App = () => {
           animation: "fade", // Slide from right
         }}
       >
+       <Stack.Screen name="Opening" component={Opening} />
         <Stack.Screen name="Dashboard" component={Dashboard} />
-        <Stack.Screen name="Opening" component={Opening} />
          <Stack.Screen name="Tracking" component={Tracking} />  
       <Stack.Screen name="Forgotpass" component={Forgotpass} />
       <Stack.Screen name="History" component={History} />
