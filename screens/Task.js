@@ -25,43 +25,58 @@ const TaskWalkingScreen = () => {
             if (!token) {
                 throw new Error('Token not found');
             }
-
+    
             const headers = {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             };
-
-            const response = await fetch(`https://fit-quest.azurewebsites.net/api/quest/`, {
-                method: 'GET',
-                headers: headers
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to fetch quest data');
+    
+            let allResults = [];
+            let page = 1;
+            let hasNextPage = true;
+    
+            while (hasNextPage) {
+                const response = await fetch(`https://fit-quest.azurewebsites.net/api/quest/?page=${page}`, {
+                    method: 'GET',
+                    headers: headers
+                });
+    
+                if (!response.ok) {
+                    throw new Error('Failed to fetch quest data');
+                }
+    
+                const data = await response.json();
+                allResults = [...allResults, ...data.results];
+    
+                // Check if there is a next page
+                hasNextPage = data.next !== null;
+                page += 1;
+    
+                // For this example, we only fetch up to the third page
+                if (page > 3) break;
             }
-
-            const { results } = await response.json();
-            console.log(results);
-
+    
+            console.log(allResults);
+    
             // Filter quests by difficulty and type
-            const runningQuests = results.filter(quest => quest.difficulty === difficulty && quest.type === 'Running');
-            
+            const runningQuests = allResults.filter(quest => quest.difficulty === difficulty && quest.type === 'Running');
+    
             if (runningQuests.length > 0) {
                 // Shuffle runningQuests and select one
                 const selectedQuest = shuffleAndSelect(runningQuests);
-            
+    
                 setDescription(selectedQuest.description);
                 setDistance(selectedQuest.distance);
                 setRewards(selectedQuest.prize);
                 setSlug(selectedQuest.slug);
             }
             console.log(slug);
-
+    
         } catch (error) {
             console.error('Error fetching data:', error);
         }
     }, [difficulty]);
-
+    
     const shuffleAndSelect = (array) => {
         const newArray = array.slice();
         for (let i = newArray.length - 1; i > 0; i--) {
@@ -70,7 +85,7 @@ const TaskWalkingScreen = () => {
         }
         return newArray[0];
     };
-
+    
     useEffect(() => {
         Quest();
     }, [Quest, taskCompleted]); // Re-fetch quests when taskCompleted changes
